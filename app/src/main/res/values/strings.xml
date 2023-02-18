@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Telegram Clone</string>
+    <string name="input_your_message">Сообщение</string>
 </resources>
