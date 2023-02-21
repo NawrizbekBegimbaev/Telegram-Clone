@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <View
+        android:id="@+id/chat_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="#00BFFF"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/btn_back"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:padding="8dp"
+        android:layout_margin="8dp"
+        android:background="?attr/actionBarItemBackground"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/toolbar_image"
+        app:layout_constraintBottom_toBottomOf="@id/toolbar_image"
+        android:src="@drawable/ic_arrow_back"
+        app:tint="@color/white" />
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/toolbar_image"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="8dp"
+        android:src="@drawable/ic_person"
+        app:civ_border_color="@color/purple_200"
+        app:civ_border_width="2dp"
+        app:civ_circle_background_color="@color/white"
+        app:layout_constraintEnd_toStartOf="@+id/user_name"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintBottom_toBottomOf="@id/chat_toolbar"/>
+
+    <TextView
+        android:id="@+id/user_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="2dp"
+        android:text="@string/user_name"
+        android:textColor="@color/white"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@id/toolbar_image"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/toolbar_image" />
+
+    <ImageView
+        android:id="@+id/btn_call"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:padding="8dp"
+        android:layout_margin="8dp"
+        android:background="?attr/actionBarItemBackground"
+        app:layout_constraintEnd_toStartOf="@id/btn_more"
+        app:layout_constraintTop_toTopOf="@id/toolbar_image"
+        app:layout_constraintBottom_toBottomOf="@id/toolbar_image"
+        android:src="@drawable/ic_call"
+        app:tint="@color/white" />
+
+    <ImageView
+        android:id="@+id/btn_more"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:padding="8dp"
+        android:layout_margin="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:background="?attr/actionBarItemBackground"
+        app:layout_constraintTop_toTopOf="@id/toolbar_image"
+        app:layout_constraintBottom_toBottomOf="@id/toolbar_image"
+        android:src="@drawable/ic_more_vert"
+        app:tint="@color/white" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view_chat"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintBottom_toTopOf="@id/til_name"
+        app:layout_constraintTop_toBottomOf="@id/chat_toolbar"
+        tools:listitem="@layout/item_chat" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/til_name"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/input_your_message"
+        app:endIconMode="custom"
+        app:endIconDrawable="@drawable/ic_send"
+        app:endIconTint="@color/purple_200"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/recycler_view_chat">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text" />
+    </com.google.android.material.textfield.TextInputLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

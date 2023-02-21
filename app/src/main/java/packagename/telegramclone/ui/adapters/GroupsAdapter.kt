@@ -9,14 +9,18 @@ import packagename.telegramclone.R
 import packagename.telegramclone.data.User
 import packagename.telegramclone.databinding.ItemGroupsBinding
 
-class ItemGroupsAdapter: ListAdapter<User, ItemGroupsAdapter.ItemGroupsViewHolder>(DiffUtilCallBack()) {
+class GroupsAdapter: ListAdapter<User, GroupsAdapter.ItemGroupsViewHolder>(diffUtilCallBack) {
     
     inner class ItemGroupsViewHolder(private val binding: ItemGroupsBinding): ViewHolder(binding.root) {
 
         fun bind() {
             val d = getItem(adapterPosition)
             binding.apply {
-                name.text = d.name
+                tvName.text = d.name
+
+                tvName.setOnClickListener {
+                    onItemClick.invoke(d.id)
+                }
             }
         }
     }
@@ -35,14 +39,20 @@ class ItemGroupsAdapter: ListAdapter<User, ItemGroupsAdapter.ItemGroupsViewHolde
     override fun onBindViewHolder(holder: ItemGroupsViewHolder, position: Int) {
         holder.bind()
     }
-}
 
-private class DiffUtilCallBack: DiffUtil.ItemCallback<User>() {
-    override fun areItemsTheSame(oldItem: User, newItem: User): Boolean {
-        return oldItem.id == newItem.id
+    private object diffUtilCallBack: DiffUtil.ItemCallback<User>() {
+        override fun areItemsTheSame(oldItem: User, newItem: User): Boolean {
+            return oldItem.id == newItem.id
+        }
+
+        override fun areContentsTheSame(oldItem: User, newItem: User): Boolean {
+            return oldItem == newItem
+        }
     }
 
-    override fun areContentsTheSame(oldItem: User, newItem: User): Boolean {
-        return oldItem == newItem
+    private var onItemClick: (id: String) -> Unit = {}
+    fun setOnItemClickListener(onItemClick: (id: String) -> Unit) {
+         this.onItemClick = onItemClick
     }
 }
+
