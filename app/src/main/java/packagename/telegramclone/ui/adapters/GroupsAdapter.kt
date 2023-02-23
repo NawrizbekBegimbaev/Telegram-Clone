@@ -19,7 +19,7 @@ class GroupsAdapter: ListAdapter<User, GroupsAdapter.ItemGroupsViewHolder>(diffU
                 tvName.text = d.name
 
                 tvName.setOnClickListener {
-                    onItemClick.invoke(d.id)
+                    onItemClick.invoke(d.id, d.name)
                 }
             }
         }
@@ -50,8 +50,8 @@ class GroupsAdapter: ListAdapter<User, GroupsAdapter.ItemGroupsViewHolder>(diffU
         }
     }
 
-    private var onItemClick: (id: String) -> Unit = {}
-    fun setOnItemClickListener(onItemClick: (id: String) -> Unit) {
+    private var onItemClick: (id: String, name: String) -> Unit = {_, _ ->}
+    fun setOnItemClickListener(onItemClick: (id: String, name: String) -> Unit) {
          this.onItemClick = onItemClick
     }
 }

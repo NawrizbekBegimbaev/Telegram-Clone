@@ -1,9 +1,8 @@
 package packagename.telegramclone.presentation
 
+import android.annotation.SuppressLint
 import android.app.Application
-import android.content.SharedPreferences
 import android.util.Log
-import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.database.DataSnapshot
@@ -12,49 +11,67 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
+import packagename.telegramclone.data.Chat
 import java.util.*
 
 class ChatsViewModel(application: Application) : AndroidViewModel(application) {
 
-    var id = 0
-
     private val realTimeDb: FirebaseDatabase = FirebaseDatabase.getInstance()
 
-    val getMessageFlow = MutableSharedFlow<MutableList<String>>()
+    val getMessageFlow = MutableSharedFlow<MutableList<Chat>>()
 
-    fun sendMessage(message: String, uid: String) {
-        realTimeDb.getReference("chats").child(uid).child("${id++}").setValue(
+    fun sendMessage(message: String, currentDateId: String, groupId: String, from: String) {
+
+        val time = System.currentTimeMillis().toString()
+
+        val data = mapOf(
+            "message" to message,
+            "from" to from
+        )
+
+        /*realTimeDb.getReference("chats").child(documentId).child(time).child("message").setValue(
             message
         )
 
+        realTimeDb.getReference("chats").child(documentId).child(time).child("from").setValue(
+            from
+        )*/
+
+        realTimeDb.getReference("chats").child(groupId).child(time).setValue(data)
+
     }
 
-    suspend fun getMessage(uidUser: String) {
-        realTimeDb.getReference("chats").child(uidUser).addValueEventListener(object: ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val tempList = mutableListOf<String>()
-                viewModelScope.launch {
-                    snapshot.children.forEach { data ->
+    suspend fun getMessage(docId: String) {
+        realTimeDb.getReference("chats").child(docId)
+            .addValueEventListener(object : ValueEventListener {
+                @SuppressLint("SuspiciousIndentation")
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val tempList = mutableListOf<Chat>()
+                    viewModelScope.launch {
+                        snapshot.children.forEach { data ->
 
-                        //val d = data.value as HashMap<*, *>
+                            val d = data.value as HashMap<*, *>
 
-                        val message = data.value.toString()
+                            val chat = Chat(d["message"].toString(), d["from"].toString())
                             //val user = User("kdsjfsjf", data.value.toString())
-                            tempList.add(message)
+                            tempList.add(chat)
 
+                        }
+                        Log.d("TTTT", "$tempList")
+                        getMessageFlow.emit(tempList)
                     }
-                    Log.d("TTTT", "$tempList")
-                    getMessageFlow.emit(tempList)
+
                 }
 
-            }
+                override fun onCancelled(error: DatabaseError) {
+                    TODO("Not yet implemented")
+                }
 
-            override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
-            }
-
-        })
+            })
     }
 
-    private fun uniqueId():String = UUID.randomUUID().toString()
+    private fun uniqueId(): String = UUID.randomUUID().toString()
+
+    fun date() {
+    }
 }

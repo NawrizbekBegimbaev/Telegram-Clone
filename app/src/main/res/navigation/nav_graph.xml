@@ -2,15 +2,18 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/groupsScreen">
+    app:startDestination="@id/userNameInputFragment">
 
     <fragment
         android:id="@+id/groupsScreen"
-        android:name="packagename.telegramclone.ui.screen.GroupsFragment"
+        android:name="packagename.telegramclone.ui.group.GroupsFragment"
         android:label="GroupsScreen" >
         <action
-            android:id="@+id/action_groupsScreen_to_chatFragment"
+            android:id="@+id/action_groupsFragment_to_chatFragment"
             app:destination="@id/chatFragment" />
+        <argument
+            android:name="username"
+            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/chatFragment"
@@ -19,5 +22,13 @@
         <argument
             android:name="idUser"
             app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/userNameInputFragment"
+        android:name="packagename.telegramclone.ui.auth.UserNameInputFragment"
+        android:label="UserNameInputFragment" >
+        <action
+            android:id="@+id/action_userNameInputFragment_to_groupsFragment"
+            app:destination="@id/groupsScreen" />
     </fragment>
 </navigation>

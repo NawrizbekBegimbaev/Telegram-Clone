@@ -2,29 +2,45 @@ package packagename.telegramclone.ui.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
+import androidx.recyclerview.widget.RecyclerView.VISIBLE
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import packagename.telegramclone.R
+import packagename.telegramclone.data.Chat
+import packagename.telegramclone.data.LocalStorage
 import packagename.telegramclone.data.User
 import packagename.telegramclone.databinding.ItemChatBinding
 
-class ChatAdapter : ListAdapter<String, ChatAdapter.ChatViewHolder>(myDiffCallBack) {
+class ChatAdapter : ListAdapter<Chat, ChatAdapter.ChatViewHolder>(myDiffCallBack) {
+
+    val sharedPreferences = LocalStorage()
 
     inner class ChatViewHolder(private val binding: ItemChatBinding) : ViewHolder(binding.root) {
         fun bind() {
             val d = getItem(adapterPosition)
 
-            binding.message.text = d
+            binding.menden.isVisible = false
+            binding.userden.isVisible = false
+
+            if (d.from == sharedPreferences.username) {
+                binding.message.text = d.message
+                binding.menden.isVisible = true
+            } else {
+                binding.userden.isVisible = true
+                binding.messageUserden.text = d.message
+            }
+
         }
     }
 
-    private object myDiffCallBack: DiffUtil.ItemCallback<String>() {
-        override fun areItemsTheSame(oldItem: String, newItem: String): Boolean {
+    private object myDiffCallBack: DiffUtil.ItemCallback<Chat>() {
+        override fun areItemsTheSame(oldItem: Chat, newItem: Chat): Boolean {
             return oldItem == newItem
         }
 
-        override fun areContentsTheSame(oldItem: String, newItem: String): Boolean {
+        override fun areContentsTheSame(oldItem: Chat, newItem: Chat): Boolean {
             return oldItem == newItem
         }
     }
