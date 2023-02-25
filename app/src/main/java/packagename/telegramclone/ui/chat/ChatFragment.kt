@@ -1,124 +1,136 @@
 package packagename.telegramclone.ui.chat
 
+import android.media.MediaPlayer
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.annotation.RequiresApi
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Param
-import com.google.firebase.database.ServerValue
+import androidx.navigation.fragment.navArgs
+import by.kirich1409.viewbindingdelegate.viewBinding
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import packagename.telegramclone.R
+import packagename.telegramclone.data.MessageData
 import packagename.telegramclone.databinding.FragmentChatBinding
-import packagename.telegramclone.presentation.ChatsViewModel
-import packagename.telegramclone.presentation.GroupsViewModel
+import packagename.telegramclone.presentation.chats.ChatsViewModel
+import packagename.telegramclone.presentation.groups.GroupsViewModel
 import packagename.telegramclone.ui.adapters.ChatAdapter
+import ru.ldralighieri.corbind.view.clicks
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.HashMap
 
 
-@Suppress("UNREACHABLE_CODE")
 class ChatFragment : Fragment(R.layout.fragment_chat) {
 
-    private lateinit var binding: FragmentChatBinding
+    private val binding by viewBinding(FragmentChatBinding::bind)
+    private val args: ChatFragmentArgs by navArgs()
+    private var _adapter: ChatAdapter? = null
+    private val adapter get() = _adapter!!
 
     private lateinit var viewModel: ChatsViewModel
-    private lateinit var groupsViewModel: GroupsViewModel
 
-    private val adapter = ChatAdapter()
 
-    @RequiresApi(Build.VERSION_CODES.O)
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding = FragmentChatBinding.bind(view)
+
+        initData()
+        initObservers()
+        initListeners()
+
+
+    }
+
+    private fun initListeners() {
+        binding.btnBack.clicks().debounce(200).onEach {
+            findNavController().popBackStack()
+        }.launchIn(lifecycleScope)
+
+        binding.etMessage.addTextChangedListener {
+            if (it.toString().isNotEmpty()) {
+                binding.icAttach.visibility = View.GONE
+                binding.icVideo.visibility = View.GONE
+                binding.icSend.visibility = View.VISIBLE
+            } else {
+                binding.icAttach.visibility = View.VISIBLE
+                binding.icVideo.visibility = View.VISIBLE
+                binding.icSend.visibility = View.GONE
+            }
+        }
+
+        binding.icSend.clicks().debounce(200).onEach {
+            val message = binding.etMessage.text.toString()
+            if (it.toString().isNotEmpty()) {
+                viewModel.sendMessage(message, args.idUser)
+                binding.etMessage.setText("")
+            } else {
+                binding.icAttach.visibility = View.VISIBLE
+                binding.icVideo.visibility = View.VISIBLE
+                binding.icSend.visibility = View.GONE
+            }
+        }.launchIn(lifecycleScope)
+
+
+    }
+
+    private fun initObservers() {
+        FirebaseDatabase.getInstance().getReference("chats").child(args.idUser)
+            .addValueEventListener(object : ValueEventListener{
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    try {
+                        val list = mutableListOf<MessageData>()
+                        snapshot.children.forEach {
+                            val item = it.value as HashMap<*, *>
+                            list.add(
+                                MessageData(
+                                    item["message"].toString(),
+                                    item["user"].toString(),
+                                    item["time"].toString()
+                                )
+                            )
+                        }
+                        adapter.submitList(list)
+                        if (list.isNotEmpty()) {
+                            binding.recyclerViewChat.smoothScrollToPosition(list.lastIndex)
+                            val audio =
+                                MediaPlayer.create(requireContext(), R.raw.new_message_sound)
+                            audio.start()
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    TODO("Not yet implemented")
+                }
+
+            })
+    }
+
+    private fun initData() {
+        binding.tvGroupName.text = args.name
+        _adapter = ChatAdapter()
+        binding.recyclerViewChat.adapter = adapter
 
         viewModel = ViewModelProvider(
             requireActivity(),
             ViewModelProvider.AndroidViewModelFactory(requireActivity().application)
         ).get(ChatsViewModel::class.java)
-
-        groupsViewModel = ViewModelProvider(
-            requireActivity(),
-            ViewModelProvider.AndroidViewModelFactory(requireActivity().application)
-        ).get(GroupsViewModel::class.java)
-
-        val docId = arguments?.getString("id") ?: ""
-        val name = arguments?.getString("name") ?: ""
-        val userNameInput = arguments?.getString("username") ?: ""
-        Log.d("TTTT", docId)
-
-        initObservers()
-
-        binding.apply {
-
-            recyclerViewChat.adapter = adapter
-
-            userName.text = name
-
-            lifecycleScope.launchWhenResumed {
-                viewModel.getMessage(docId)
-                Log.d("TTTT", "$docId -> ")
-                recyclerViewChat.smoothScrollToPosition(adapter.itemCount)
-            }
-
-            btnBack.setOnClickListener {
-                findNavController().popBackStack(R.id.groupsScreen, false)
-            }
-
-            tilName.setEndIconOnClickListener {
-                lifecycleScope.launchWhenResumed {
-                    val currentDate = date()
-                    if (binding.etName.text?.isNotEmpty() == true) {
-                        viewModel.sendMessage(etName.text.toString(), currentDate, docId, userNameInput)
-                        etName.text?.clear()
-                    }
-                }
-            }
-        }
-    }
-    private fun initObservers() {
-        viewModel.getMessageFlow.onEach {
-            adapter.submitList(it)
-        }.launchIn(lifecycleScope)
-
-        /*groupsViewModel.getDocumentIdFlow.onEach {
-            lifecycleScope.launchWhenResumed {
-                documentId = it
-                Log.d("TTTT", documentId)
-            }
-        }.launchIn(lifecycleScope)*/
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun date(): String {
-        val currentDate = System.currentTimeMillis()
-        val dateFormat: DateFormat = SimpleDateFormat("ddMMyyyy", Locale.getDefault())
-        val dateText: String = dateFormat.format(currentDate)
-        val timeFormat: DateFormat = SimpleDateFormat("hhmmss", Locale.getDefault())
-        val timeText: String = timeFormat.format(currentDate)
-
-
-        return "$dateText$timeText"
-
-        //return ServerValue.TIMESTAMP.toString()
-        //println(timestamp) // 01.01.2017 13.59.13
-        /*return ZonedDateTime.now(ZoneId.of("America/Sao_Paulo"))
-            .format(DateTimeFormatter.ofPattern("MMddyyyhhmmss"))*/
-/*
-        val timeStampNow:Map<String, String> = ServerValue.TIMESTAMP
-        Log.e("timeNokis", timeStampNow["timestamp"]?.toLong().toString())
-        return timeStampNow["timestamp"]?.toLong().toString()*/
-
-//        val timestamp = dataSnapshot.child("timestamp").getValue() as Long
-
-    }
 
 }

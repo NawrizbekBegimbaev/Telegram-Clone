@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:id="@+id/nav_main" android:checkableBehavior="single" >
+
+        <item
+            android:id="@+id/nav_new_group"
+            android:icon="@drawable/ic_group"
+            android:title="New Group" />
+
+        <item
+            android:id="@+id/nav_contacts"
+            android:icon="@drawable/ic_person"
+            android:title="Contacts" />
+
+        <item
+            android:id="@+id/nav_calls"
+            android:icon="@drawable/ic_call"
+            android:title="Calls" />
+
+        <item
+            android:id="@+id/nav_people_nearby"
+            android:title="People Nearby"
+            android:icon="@drawable/ic_people_nearby" />
+
+        <item
+            android:id="@+id/nav_saved_message"
+            android:icon="@drawable/ic_bookmark"
+            android:title="Saved Message" />
+
+        <item
+            android:id="@+id/nav_settings"
+            android:icon="@drawable/ic_settings"
+            android:title="Settings" />
+
+    </group>
+
+    <group android:id="@+id/second_nav" android:checkableBehavior="single" >
+
+        <item
+            android:id="@+id/drawable_invite"
+            android:icon="@drawable/ic_invite"
+            android:title="Invite Friends" />
+
+        <item
+            android:icon="@drawable/ic_info"
+            android:title="Info" />
+
+    </group>
+
+</menu>

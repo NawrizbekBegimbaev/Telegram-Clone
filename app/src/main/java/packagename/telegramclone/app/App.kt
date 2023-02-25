@@ -1,8 +1,6 @@
-package packagename.telegramclone.data
+package packagename.telegramclone.app
 
 import android.app.Application
-import androidx.appcompat.app.AppCompatDelegate
-import packagename.telegramclone.BuildConfig
 
 class App : Application() {
 

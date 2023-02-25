@@ -2,7 +2,7 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/userNameInputFragment">
+    app:startDestination="@id/groupsScreen">
 
     <fragment
         android:id="@+id/groupsScreen"
@@ -14,6 +14,12 @@
         <argument
             android:name="username"
             app:argType="string" />
+        <action
+            android:id="@+id/action_groupsScreen_to_addGroupFragment"
+            app:destination="@id/addGroupFragment" />
+        <action
+            android:id="@+id/action_groupsScreen_to_editFragment"
+            app:destination="@id/editFragment" />
     </fragment>
     <fragment
         android:id="@+id/chatFragment"
@@ -22,13 +28,16 @@
         <argument
             android:name="idUser"
             app:argType="string" />
+        <argument
+            android:name="name"
+            app:argType="string" />
     </fragment>
     <fragment
-        android:id="@+id/userNameInputFragment"
-        android:name="packagename.telegramclone.ui.auth.UserNameInputFragment"
-        android:label="UserNameInputFragment" >
-        <action
-            android:id="@+id/action_userNameInputFragment_to_groupsFragment"
-            app:destination="@id/groupsScreen" />
-    </fragment>
+        android:id="@+id/addGroupFragment"
+        android:name="packagename.telegramclone.ui.group.AddGroupFragment"
+        android:label="AddGroupFragment" />
+    <fragment
+        android:id="@+id/editFragment"
+        android:name="packagename.telegramclone.ui.EditFragment"
+        android:label="EditFragment" />
 </navigation>

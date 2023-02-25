@@ -1,6 +1,6 @@
 package packagename.telegramclone.data
 
-data class User(
+data class GroupData(
     val id: String,
     val name: String
 )

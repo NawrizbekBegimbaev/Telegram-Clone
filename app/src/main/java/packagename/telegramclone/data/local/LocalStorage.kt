@@ -1,8 +1,9 @@
-package packagename.telegramclone.data
+package packagename.telegramclone.data.local
 
 import android.content.Context
 import android.content.SharedPreferences
 import com.example.chatappwithfirebase.utils.StringPreference
+import packagename.telegramclone.app.App
 
 class LocalStorage() {
 

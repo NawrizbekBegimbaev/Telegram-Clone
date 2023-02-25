@@ -3,29 +3,30 @@ package packagename.telegramclone.ui.group
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DividerItemDecoration
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import packagename.telegramclone.R
-import packagename.telegramclone.data.LocalStorage
+import packagename.telegramclone.data.local.LocalStorage
 import packagename.telegramclone.databinding.FragmentGroupsBinding
-import packagename.telegramclone.presentation.GroupsViewModel
+import packagename.telegramclone.presentation.groups.GroupsViewModel
 import packagename.telegramclone.ui.adapters.GroupsAdapter
-import packagename.telegramclone.ui.dialogs.AddUserDialog
-import java.util.*
+import ru.ldralighieri.corbind.view.clicks
 
 class GroupsFragment: Fragment(R.layout.fragment_groups) {
 
     private lateinit var binding: FragmentGroupsBinding
-    private val adapter = GroupsAdapter()
+    private var _adapter: GroupsAdapter? = null
+    private val adapter get() = _adapter!!
+
     private lateinit var viewModel: GroupsViewModel
-    private lateinit var docId: String
-    private val navArgs: GroupsFragmentArgs by navArgs()
 
     val sharedPreferences = LocalStorage()
 
@@ -38,49 +39,45 @@ class GroupsFragment: Fragment(R.layout.fragment_groups) {
             ViewModelProvider.AndroidViewModelFactory(requireActivity().application)
         ).get(GroupsViewModel::class.java)
 
+
+
+        initData()
         initObservers()
+        initListeners()
 
-        val userName = navArgs.username
-        sharedPreferences.username = userName
+    }
 
-        binding.apply {
-            recyclerView.adapter = adapter
-
-            recyclerView.addItemDecoration(
-                DividerItemDecoration(
-                    requireContext(),
-                    DividerItemDecoration.VERTICAL
-                )
+    private fun initListeners() {
+        val drawer = requireActivity().findViewById<DrawerLayout>(R.id.drawer_layout)
+        adapter.setOnItemClickListener { id, name ->
+            findNavController().navigate(
+                GroupsFragmentDirections.actionGroupsFragmentToChatFragment(id, name)
             )
-
-            lifecycleScope.launchWhenResumed {
-                viewModel.getUsers()
-            }
-
-            adapter.setOnItemClickListener {    id, name ->
-                val bundle = Bundle()
-                bundle.putString("id", id)
-                bundle.putString("name", name)
-                bundle.putString("username", userName)
-                findNavController().navigate(R.id.action_groupsFragment_to_chatFragment, bundle)
-            }
-
-            fab.setOnClickListener {
-
-                val dialog = AddUserDialog()
-                dialog.show(requireActivity().supportFragmentManager, dialog.tag)
-            }
         }
+
+        binding.fab.clicks().debounce(200).onEach {
+            findNavController().navigate(
+                GroupsFragmentDirections.actionGroupsScreenToAddGroupFragment()
+            )
+        }.launchIn(lifecycleScope)
+
+        binding.menu.clicks().debounce(200).onEach {
+            drawer.open()
+        }.launchIn(lifecycleScope)
     }
 
     private fun initObservers() {
-        viewModel.activeUsersFlow.onEach {
+        viewModel.getGroupChatsFlow.onEach {
             adapter.submitList(it)
         }.launchIn(lifecycleScope)
+    }
 
-        viewModel.getDocumentIdFlow.onEach {
-            docId = it
-            Log.w("TTTT", docId)
-        }.launchIn(lifecycleScope)
+    private fun initData() {
+        _adapter = GroupsAdapter()
+        binding.recyclerView.adapter = adapter
+
+        lifecycleScope.launchWhenResumed {
+            viewModel.getGroupsChats()
+        }
     }
 }

@@ -3,4 +3,5 @@
     <string name="input_your_message">Сообщение</string>
     <string name="text_telegram">Telegram</string>
     <string name="user_name">Дауран Гр</string>
+    <string name="text_enter_group_name">Enter group name</string>
 </resources>

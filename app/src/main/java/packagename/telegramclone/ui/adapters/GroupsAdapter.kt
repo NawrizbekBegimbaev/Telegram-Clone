@@ -6,10 +6,10 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import packagename.telegramclone.R
-import packagename.telegramclone.data.User
+import packagename.telegramclone.data.GroupData
 import packagename.telegramclone.databinding.ItemGroupsBinding
 
-class GroupsAdapter: ListAdapter<User, GroupsAdapter.ItemGroupsViewHolder>(diffUtilCallBack) {
+class GroupsAdapter: ListAdapter<GroupData, GroupsAdapter.ItemGroupsViewHolder>(diffUtilCallBack) {
     
     inner class ItemGroupsViewHolder(private val binding: ItemGroupsBinding): ViewHolder(binding.root) {
 
@@ -18,7 +18,7 @@ class GroupsAdapter: ListAdapter<User, GroupsAdapter.ItemGroupsViewHolder>(diffU
             binding.apply {
                 tvName.text = d.name
 
-                tvName.setOnClickListener {
+                binding.root.setOnClickListener {
                     onItemClick.invoke(d.id, d.name)
                 }
             }
@@ -40,12 +40,12 @@ class GroupsAdapter: ListAdapter<User, GroupsAdapter.ItemGroupsViewHolder>(diffU
         holder.bind()
     }
 
-    private object diffUtilCallBack: DiffUtil.ItemCallback<User>() {
-        override fun areItemsTheSame(oldItem: User, newItem: User): Boolean {
-            return oldItem.id == newItem.id
+    private object diffUtilCallBack: DiffUtil.ItemCallback<GroupData>() {
+        override fun areItemsTheSame(oldItem: GroupData, newItem: GroupData): Boolean {
+            return oldItem == newItem
         }
 
-        override fun areContentsTheSame(oldItem: User, newItem: User): Boolean {
+        override fun areContentsTheSame(oldItem: GroupData, newItem: GroupData): Boolean {
             return oldItem == newItem
         }
     }
