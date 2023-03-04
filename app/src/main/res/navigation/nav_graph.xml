@@ -38,6 +38,6 @@
         android:label="AddGroupFragment" />
     <fragment
         android:id="@+id/editFragment"
-        android:name="packagename.telegramclone.ui.EditFragment"
+        android:name="packagename.telegramclone.ui.edit.EditFragment"
         android:label="EditFragment" />
 </navigation>

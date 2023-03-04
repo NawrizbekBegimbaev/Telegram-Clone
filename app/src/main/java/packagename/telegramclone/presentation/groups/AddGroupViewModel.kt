@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import packagename.telegramclone.domain.MainRepository
 
-class AddGroupViewModel(application: Application) : AndroidViewModel(application) {
+class AddGroupViewModel : ViewModel() {
 
     val repo = MainRepository(FirebaseFirestore.getInstance(), FirebaseDatabase.getInstance())
 

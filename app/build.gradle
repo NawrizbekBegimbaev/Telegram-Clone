@@ -84,4 +84,11 @@ dependencies {
     implementation 'ru.ldralighieri.corbind:corbind:1.5.4'
     implementation 'ru.ldralighieri.corbind:corbind-material:1.5.4'
     implementation 'ru.ldralighieri.corbind:corbind-swiperefreshlayout:1.5.4'
+
+
+    //Koin
+    def koin_version = "3.3.3"
+    implementation "io.insert-koin:koin-android:$koin_version"
+    implementation "io.insert-koin:koin-core:$koin_version"
+    testImplementation "io.insert-koin:koin-test-junit4:$koin_version"
 }

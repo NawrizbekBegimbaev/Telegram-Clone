@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import packagename.telegramclone.R
 import packagename.telegramclone.data.local.LocalStorage
 import packagename.telegramclone.databinding.FragmentGroupsBinding
@@ -26,24 +27,17 @@ class GroupsFragment: Fragment(R.layout.fragment_groups) {
     private var _adapter: GroupsAdapter? = null
     private val adapter get() = _adapter!!
 
-    private lateinit var viewModel: GroupsViewModel
-
-    val sharedPreferences = LocalStorage()
+    private val viewModel by viewModel<GroupsViewModel>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentGroupsBinding.bind(view)
 
-        viewModel = ViewModelProvider(
-            requireActivity(),
-            ViewModelProvider.AndroidViewModelFactory(requireActivity().application)
-        ).get(GroupsViewModel::class.java)
-
-
 
         initData()
         initObservers()
         initListeners()
+
 
     }
 

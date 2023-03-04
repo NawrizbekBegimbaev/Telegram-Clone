@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -16,7 +17,7 @@ import packagename.telegramclone.data.MessageData
 import packagename.telegramclone.domain.MainRepository
 import java.util.*
 
-class ChatsViewModel(application: Application) : AndroidViewModel(application) {
+class ChatsViewModel() : ViewModel() {
 
     val repo = MainRepository(FirebaseFirestore.getInstance(), FirebaseDatabase.getInstance())
 

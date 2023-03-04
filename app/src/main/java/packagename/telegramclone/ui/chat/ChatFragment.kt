@@ -20,6 +20,7 @@ import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import packagename.telegramclone.R
 import packagename.telegramclone.data.MessageData
 import packagename.telegramclone.databinding.FragmentChatBinding
@@ -39,8 +40,7 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
     private var _adapter: ChatAdapter? = null
     private val adapter get() = _adapter!!
 
-    private lateinit var viewModel: ChatsViewModel
-
+    private val viewModel by viewModel<ChatsViewModel>()
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -126,10 +126,6 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
         _adapter = ChatAdapter()
         binding.recyclerViewChat.adapter = adapter
 
-        viewModel = ViewModelProvider(
-            requireActivity(),
-            ViewModelProvider.AndroidViewModelFactory(requireActivity().application)
-        ).get(ChatsViewModel::class.java)
     }
 
 

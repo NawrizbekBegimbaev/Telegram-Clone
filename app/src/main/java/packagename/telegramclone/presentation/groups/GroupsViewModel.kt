@@ -2,6 +2,7 @@ package packagename.telegramclone.presentation.groups
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FirebaseFirestore
@@ -13,7 +14,7 @@ import packagename.telegramclone.data.GroupData
 import packagename.telegramclone.data.ResultData
 import packagename.telegramclone.domain.MainRepository
 
-class GroupsViewModel(application: Application) : AndroidViewModel(application) {
+class GroupsViewModel() : ViewModel() {
 
     val getGroupChatsFlow = MutableSharedFlow<List<GroupData>>()
     val messageFlow = MutableSharedFlow<String>()

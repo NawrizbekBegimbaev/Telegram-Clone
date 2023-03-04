@@ -11,6 +11,7 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import packagename.telegramclone.R
 import packagename.telegramclone.databinding.FragmentAddGroupBinding
 import packagename.telegramclone.presentation.groups.AddGroupViewModel
@@ -18,19 +19,17 @@ import ru.ldralighieri.corbind.view.clicks
 
 class AddGroupFragment : Fragment(R.layout.fragment_add_group) {
 
-    private lateinit var viewModel: AddGroupViewModel
+    private val viewModel by viewModel<AddGroupViewModel>()
     private val binding by viewBinding(FragmentAddGroupBinding::bind)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel = ViewModelProvider(
-            requireActivity(),
-            ViewModelProvider.AndroidViewModelFactory(requireActivity().application)
-        )[AddGroupViewModel::class.java]
 
         initListeners()
         initObservers()
+
+
     }
 
     private fun initObservers() {

@@ -1,4 +1,4 @@
-package packagename.telegramclone.ui
+package packagename.telegramclone.ui.edit
 
 import android.os.Bundle
 import android.view.View

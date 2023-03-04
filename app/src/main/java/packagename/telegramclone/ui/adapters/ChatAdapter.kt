@@ -5,34 +5,41 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
+import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import packagename.telegramclone.R
 import packagename.telegramclone.data.MessageData
 import packagename.telegramclone.data.local.LocalStorage
-import packagename.telegramclone.databinding.ItemChatBinding
+import packagename.telegramclone.databinding.ItemChatAnotherBinding
+import packagename.telegramclone.databinding.ItemChatMeBinding
 
-class ChatAdapter : ListAdapter<MessageData, ChatAdapter.ChatViewHolder>(myDiffCallBack) {
+class ChatAdapter : ListAdapter<MessageData, RecyclerView.ViewHolder>(myDiffCallBack) {
 
-    val sharedPreferences = LocalStorage()
 
-    inner class ChatViewHolder(private val binding: ItemChatBinding) : ViewHolder(binding.root) {
+    companion object {
+        const val ME = 0
+        const val ANOTHER = 1
+    }
+    inner class ChatAnotherViewHolder(private val binding: ItemChatAnotherBinding) : ViewHolder(binding.root) {
         fun bind() {
-            val d = getItem(adapterPosition)
+            val d = getItem(absoluteAdapterPosition)
 
-            binding.menden.isVisible = false
-            binding.userden.isVisible = false
-
-            if (d.from == sharedPreferences.username) {
-                binding.message.text = d.message
-                binding.timeMenden.text = d.time
-                binding.menden.isVisible = true
-            } else {
-                binding.userden.isVisible = true
-                binding.messageUserden.text = d.message
-                binding.userNameUserden.text = d.from
-                binding.timeUser.text = d.time
+            binding.apply {
+                tvMessage.text = d.message
+                tvTime.text = d.time
+                tvUsername.text = d.from
             }
+        }
+    }
 
+    inner class ChatMeViewHolder(private val binding: ItemChatMeBinding) : ViewHolder(binding.root) {
+        fun bind() {
+            val d = getItem(absoluteAdapterPosition)
+
+            binding.apply {
+                tvTime.text = d.time
+                tvMessage.text = d.message
+            }
         }
     }
 
@@ -46,13 +53,40 @@ class ChatAdapter : ListAdapter<MessageData, ChatAdapter.ChatViewHolder>(myDiffC
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChatViewHolder {
-        val v = LayoutInflater.from(parent.context).inflate(R.layout.item_chat, parent, false)
-        val binding = ItemChatBinding.bind(v)
-        return ChatViewHolder(binding)
+    override fun getItemViewType(position: Int): Int {
+        return when (getItem(position).from) {
+            LocalStorage().username -> ME
+            else -> ANOTHER
+        }
     }
 
-    override fun onBindViewHolder(holder: ChatViewHolder, position: Int) {
-        holder.bind()
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        return when (viewType) {
+            ME -> {
+                val v = LayoutInflater.from(parent.context).inflate(
+                    R.layout.item_chat_me, parent, false
+                )
+                val binding = ItemChatMeBinding.bind(v)
+                ChatMeViewHolder(binding)
+            }
+            else -> {
+                val v = LayoutInflater.from(parent.context).inflate(
+                    R.layout.item_chat_another, parent, false
+                )
+                val binding = ItemChatAnotherBinding.bind(v)
+                ChatAnotherViewHolder(binding)
+            }
+        }
+    }
+
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        when (getItem(position).from) {
+            LocalStorage().username -> {
+                (holder as ChatMeViewHolder).bind()
+            }
+            else -> {
+                (holder as ChatAnotherViewHolder).bind()
+            }
+        }
     }
 }
